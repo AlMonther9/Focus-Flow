@@ -6,9 +6,9 @@ function renderTasks() {
 
   tasks.forEach(function (task, index) {
     let priorityClass = "";
-    if (task.priority === "high") {
+    if (task.priority === "High") {
       priorityClass = "text-on-primary-container bg-primary-container";
-    } else if (task.priority === "medium") {
+    } else if (task.priority === "Medium") {
       priorityClass = "text-on-tertiary-fixed-variant bg-tertiary-fixed-dim";
     } else {
       priorityClass = "text-on-secondary-container bg-secondary-fixed-dim";
@@ -52,7 +52,7 @@ function renderTasks() {
   });
 }
 
-function addTask() {
+async function addTask() {
   const title = taskInput.value.trim();
   const priority = taskPriority.value;
 
@@ -61,18 +61,27 @@ function addTask() {
     return;
   }
 
-  const newTask = {
-    id: Date.now(),
+  const tempTask = {
     title: title,
     priority: priority,
     completed: false,
     createdAt: new Date().toISOString()
   };
 
-  tasks.push(newTask);
-  backend.createTask(newTask);
+  addTaskBtn.disabled = true;
+  addTaskBtn.classList.add("opacity-50");
+
+  const createdTask = await backend.createTask(tempTask);
+
+  // Use the UUID from backend if provided, else fallback to local timestamp
+  tempTask.id = (createdTask && createdTask.id) ? createdTask.id : Date.now();
+
+  tasks.push(tempTask);
   renderTasks();
   taskInput.value = "";
+
+  addTaskBtn.disabled = false;
+  addTaskBtn.classList.remove("opacity-50");
 }
 
 function toggleTask(index) {
