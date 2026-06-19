@@ -30,8 +30,8 @@ function countdown() {
             successModal.classList.remove("hidden");
 
             if (activeTaskId) {
-                backend.logSession(activeTaskId, 25 * 60);
-                focusHistory.push({ taskId: activeTaskId, duration: 25 * 60, date: new Date() });
+                backend.logSession(activeTaskId, customFocusDuration);
+                focusHistory.push({ taskId: activeTaskId, duration: customFocusDuration, date: new Date() });
                 renderAnalytics();
             }
 
@@ -42,7 +42,7 @@ function countdown() {
             }
             updateSessionDisplay();
         } else {
-            alert("🚨 Alarm: Your break is over! Time to start a new 25-minute focus session.");
+            alert(`🚨 Alarm: Your break is over! Time to start a new ${(customFocusDuration / 60)}-minute focus session.`);
             setFocusMode();
         }
     }
@@ -90,7 +90,7 @@ function pauseTimer() {
 
 function resetTimer() {
     pauseTimer();
-    timeLeft = isFocusMode ? 25 * 60 : 5 * 60;
+    timeLeft = isFocusMode ? customFocusDuration : customBreakDuration;
     endTime = null;
     updateTimerDisplay();
 

@@ -38,3 +38,13 @@ const authModalSubtitle = document.getElementById("auth-modal-subtitle");
 const userNavProfile = document.getElementById("user-nav-profile");
 const navUsername = document.getElementById("nav-username");
 const logoutBtn = document.getElementById("logout-btn");
+
+// Custom Duration Settings Elements
+const timerSettingsBtn = document.getElementById("timer-settings-btn");
+const timerSettingsPanel = document.getElementById("timer-settings-panel");
+const closeSettingsBtn = document.getElementById("close-settings-btn");
+const focusDurationSlider = document.getElementById("focus-duration-slider");
+const focusDurationVal = document.getElementById("focus-duration-val");
+const breakDurationSlider = document.getElementById("break-duration-slider");
+const breakDurationVal = document.getElementById("break-duration-val");
+const applySettingsBtn = document.getElementById("apply-settings-btn");

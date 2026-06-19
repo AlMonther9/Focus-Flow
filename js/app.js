@@ -244,5 +244,88 @@ if (dismissIntroBtn) {
     });
 }
 
+// Custom Durations Settings Logic
+if (focusDurationSlider && focusDurationVal) {
+    focusDurationSlider.addEventListener("input", function () {
+        focusDurationVal.textContent = `${focusDurationSlider.value} min`;
+    });
+}
+
+if (breakDurationSlider && breakDurationVal) {
+    breakDurationSlider.addEventListener("input", function () {
+        breakDurationVal.textContent = `${breakDurationSlider.value} min`;
+    });
+}
+
+function closeSettingsPanel() {
+    if (timerSettingsPanel) {
+        timerSettingsPanel.classList.add("opacity-0", "scale-95");
+        setTimeout(() => {
+            timerSettingsPanel.classList.add("hidden");
+        }, 300);
+    }
+}
+
+if (timerSettingsBtn && timerSettingsPanel) {
+    timerSettingsBtn.addEventListener("click", function () {
+        if (timerSettingsPanel.classList.contains("hidden")) {
+            timerSettingsPanel.classList.remove("hidden");
+            setTimeout(() => {
+                timerSettingsPanel.classList.remove("opacity-0", "scale-95");
+            }, 20);
+        } else {
+            closeSettingsPanel();
+        }
+    });
+}
+
+if (closeSettingsBtn) {
+    closeSettingsBtn.addEventListener("click", closeSettingsPanel);
+}
+
+if (applySettingsBtn) {
+    applySettingsBtn.addEventListener("click", function () {
+        const newFocusMins = parseInt(focusDurationSlider.value) || 25;
+        const newBreakMins = parseInt(breakDurationSlider.value) || 5;
+
+        customFocusDuration = newFocusMins * 60;
+        customBreakDuration = newBreakMins * 60;
+
+        localStorage.setItem("custom_focus_duration", customFocusDuration);
+        localStorage.setItem("custom_break_duration", customBreakDuration);
+
+        if (!isTimerRunning) {
+            timeLeft = isFocusMode ? customFocusDuration : customBreakDuration;
+            updateTimerDisplay();
+        }
+
+        closeSettingsPanel();
+    });
+}
+
+// Load Stored Custom Durations on Startup
+(function loadStoredDurations() {
+    const storedFocus = localStorage.getItem("custom_focus_duration");
+    const storedBreak = localStorage.getItem("custom_break_duration");
+    if (storedFocus) {
+        customFocusDuration = parseInt(storedFocus);
+        if (focusDurationSlider) {
+            focusDurationSlider.value = customFocusDuration / 60;
+            if (focusDurationVal) focusDurationVal.textContent = `${focusDurationSlider.value} min`;
+        }
+    }
+    if (storedBreak) {
+        customBreakDuration = parseInt(storedBreak);
+        if (breakDurationSlider) {
+            breakDurationSlider.value = customBreakDuration / 60;
+            if (breakDurationVal) breakDurationVal.textContent = `${breakDurationSlider.value} min`;
+        }
+    }
+    timeLeft = isFocusMode ? customFocusDuration : customBreakDuration;
+    if (typeof updateTimerDisplay === "function") {
+        updateTimerDisplay();
+    }
+})();
+
 // Start application runtime
 init();
