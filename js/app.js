@@ -195,7 +195,7 @@ if (focusTrayClose) {
 }
 
 // Timer Event Listeners
-if (startBtn) startBtn.addEventListener("click", startTimer);
+if (startBtn) startBtn.addEventListener("click", togglePlayPause);
 if (pauseBtn) pauseBtn.addEventListener("click", togglePlayPause);
 if (resetBtn) resetBtn.addEventListener("click", resetTimer);
 
@@ -219,6 +219,28 @@ function hideUserNavbarProfile() {
 if (logoutBtn) {
     logoutBtn.addEventListener("click", function () {
         auth.logout();
+    });
+}
+
+// Dismiss App Intro
+const appIntro = document.getElementById("app-intro");
+const dismissIntroBtn = document.getElementById("dismiss-intro-btn");
+
+if (localStorage.getItem("hide_intro") === "true") {
+    if (appIntro) appIntro.classList.add("hidden");
+}
+
+if (dismissIntroBtn) {
+    dismissIntroBtn.addEventListener("click", function () {
+        localStorage.setItem("hide_intro", "true");
+        if (appIntro) {
+            appIntro.style.transition = "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)";
+            appIntro.style.opacity = "0";
+            appIntro.style.transform = "translateY(-10px)";
+            setTimeout(() => {
+                appIntro.classList.add("hidden");
+            }, 300);
+        }
     });
 }
 

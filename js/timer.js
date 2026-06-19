@@ -59,9 +59,14 @@ function startTimer() {
         endTime = Date.now() + timeLeft * 1000;
         timerInterval = setInterval(countdown, 1000);
 
-        pauseBtn.querySelector('span').textContent = 'pause';
-        startBtn.disabled = true;
-        startBtn.classList.add("opacity-50", "pointer-events-none");
+        if (pauseBtn) {
+            const iconSpan = pauseBtn.querySelector('span');
+            if (iconSpan) iconSpan.textContent = 'pause';
+        }
+        if (startBtn) {
+            startBtn.textContent = 'PAUSE';
+            startBtn.classList.remove("opacity-50", "pointer-events-none");
+        }
     }
 }
 
@@ -74,7 +79,13 @@ function pauseTimer() {
     }
     endTime = null;
 
-    pauseBtn.querySelector('span').textContent = 'play_arrow';
+    if (pauseBtn) {
+        const iconSpan = pauseBtn.querySelector('span');
+        if (iconSpan) iconSpan.textContent = 'play_arrow';
+    }
+    if (startBtn) {
+        startBtn.textContent = 'RESUME';
+    }
 }
 
 function resetTimer() {
@@ -83,8 +94,11 @@ function resetTimer() {
     endTime = null;
     updateTimerDisplay();
 
-    startBtn.disabled = false;
-    startBtn.classList.remove("opacity-50", "pointer-events-none");
+    if (startBtn) {
+        startBtn.textContent = 'START';
+        startBtn.disabled = false;
+        startBtn.classList.remove("opacity-50", "pointer-events-none");
+    }
 }
 
 function focusOnTask(index) {

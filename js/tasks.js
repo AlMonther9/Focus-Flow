@@ -4,6 +4,23 @@
 function renderTasks() {
   taskList.innerHTML = "";
 
+  if (!tasks || tasks.length === 0) {
+    taskList.innerHTML = `
+      <div class="flex flex-col items-center justify-center text-center p-12 border border-dashed border-[#554241]/20 rounded-2xl bg-surface-container-low/30 backdrop-blur-sm gap-4">
+        <div class="w-14 h-14 bg-[#ffdad8] text-[#9c4141] rounded-2xl flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-3xl font-semibold">spa</span>
+        </div>
+        <div class="flex flex-col gap-1 max-w-xs">
+          <h3 class="font-bold text-lg text-[#28180b]">Your sanctuary is clear</h3>
+          <p class="text-xs text-[#554241] leading-relaxed">
+            No tasks found. Enter a task and select a priority above to start curating your focus session.
+          </p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   tasks.forEach(function (task, index) {
     let priorityClass = "";
     if (task.priority === "High") {
