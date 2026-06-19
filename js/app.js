@@ -6,9 +6,12 @@ let isLoginMode = true;
 async function init() {
     // Auth Check
     if (!auth.getToken()) {
+        hideUserNavbarProfile();
         showAuthModal();
         return; // Pause app execution until logged in
     }
+
+    showUserNavbarProfile();
 
     try {
         const fetchedTasks = await backend.fetchTasks();
@@ -40,13 +43,35 @@ function hideAuthModal() {
     if (authModal) authModal.classList.add("hidden");
 }
 
+// Auth Helper: Show inline validation error
+function showAuthError(message) {
+    const errorContainer = document.getElementById("auth-error-container");
+    const errorMessage = document.getElementById("auth-error-message");
+    if (errorContainer && errorMessage) {
+        errorMessage.textContent = message;
+        errorContainer.classList.remove("hidden");
+    } else {
+        alert(message);
+    }
+}
+
 // Auth Event Listeners
 if (authToggleBtn) {
     authToggleBtn.addEventListener("click", function () {
         isLoginMode = !isLoginMode;
+        const usernameContainer = document.getElementById("username-container");
+        
+        // Reset fields and errors
+        const errorContainer = document.getElementById("auth-error-container");
+        if (errorContainer) errorContainer.classList.add("hidden");
+        authEmail.value = "";
+        authPassword.value = "";
+        authUsername.value = "";
+
         if (isLoginMode) {
             authModalTitle.textContent = "Welcome back";
             authModalSubtitle.textContent = "Sign in to sync your digital sanctuary.";
+            if (usernameContainer) usernameContainer.classList.add("hidden");
             authUsername.classList.add("hidden");
             authUsername.removeAttribute("required");
             authSubmitBtn.textContent = "Sign In";
@@ -55,6 +80,7 @@ if (authToggleBtn) {
         } else {
             authModalTitle.textContent = "Join Focus Flow";
             authModalSubtitle.textContent = "Create an account to begin your journey.";
+            if (usernameContainer) usernameContainer.classList.remove("hidden");
             authUsername.classList.remove("hidden");
             authUsername.setAttribute("required", "true");
             authSubmitBtn.textContent = "Register";
@@ -67,23 +93,71 @@ if (authToggleBtn) {
 if (authForm) {
     authForm.addEventListener("submit", async function (e) {
         e.preventDefault();
+        
         const email = authEmail.value;
         const password = authPassword.value;
         const username = authUsername.value;
+
+        // Reset error message container
+        const errorContainer = document.getElementById("auth-error-container");
+        if (errorContainer) errorContainer.classList.add("hidden");
+
+        // Frontend validations matching backend constraints
+        const emailTrimmed = email.trim();
+        const passwordTrimmed = password;
+        const usernameTrimmed = username.trim();
+
+        if (!emailTrimmed) {
+            showAuthError("Email address is required.");
+            return;
+        }
+        if (emailTrimmed.length > 255) {
+            showAuthError("Email address cannot exceed 255 characters.");
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailTrimmed)) {
+            showAuthError("Please enter a valid email address.");
+            return;
+        }
+
+        if (!passwordTrimmed) {
+            showAuthError("Password is required.");
+            return;
+        }
+        if (passwordTrimmed.length < 6) {
+            showAuthError("Password must be at least 6 characters.");
+            return;
+        }
+
+        if (!isLoginMode) {
+            if (!usernameTrimmed) {
+                showAuthError("Username is required.");
+                return;
+            }
+            if (usernameTrimmed.length > 50) {
+                showAuthError("Username cannot exceed 50 characters.");
+                return;
+            }
+            if (usernameTrimmed.length < 3) {
+                showAuthError("Username must be at least 3 characters.");
+                return;
+            }
+        }
 
         authSubmitBtn.disabled = true;
         authSubmitBtn.classList.add("opacity-50");
         const originalText = authSubmitBtn.textContent;
         authSubmitBtn.textContent = "Processing...";
 
-        let success = false;
+        let result = { success: false, error: "An unknown error occurred." };
         if (isLoginMode) {
-            success = await auth.login(email, password);
+            result = await auth.login(emailTrimmed, passwordTrimmed);
         } else {
-            success = await auth.register(username, email, password);
-            if (success) {
-                // after register, try to login automatically
-                success = await auth.login(email, password);
+            result = await auth.register(usernameTrimmed, emailTrimmed, passwordTrimmed);
+            if (result.success) {
+                // Auto-login after successful registration
+                result = await auth.login(emailTrimmed, passwordTrimmed);
             }
         }
 
@@ -91,11 +165,15 @@ if (authForm) {
         authSubmitBtn.classList.remove("opacity-50");
         authSubmitBtn.textContent = originalText;
 
-        if (success) {
+        if (result.success) {
+            // Clear inputs
+            authEmail.value = "";
+            authPassword.value = "";
+            authUsername.value = "";
             hideAuthModal();
             init(); // Load tasks and resume app
         } else {
-            alert("Authentication failed. Please check your credentials.");
+            showAuthError(result.error || "Authentication failed. Please check your credentials.");
         }
     });
 }
@@ -126,6 +204,21 @@ if (continueBtn) {
         successModal.classList.add("hidden");
         setBreakMode();
         startTimer();
+    });
+}
+
+function showUserNavbarProfile() {
+    if (userNavProfile) userNavProfile.classList.remove("hidden");
+    if (navUsername) navUsername.textContent = auth.getUsername();
+}
+
+function hideUserNavbarProfile() {
+    if (userNavProfile) userNavProfile.classList.add("hidden");
+}
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", function () {
+        auth.logout();
     });
 }
 

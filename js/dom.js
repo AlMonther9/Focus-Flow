@@ -35,3 +35,6 @@ const authToggleBtn = document.getElementById("auth-toggle-btn");
 const authToggleText = document.getElementById("auth-toggle-text");
 const authModalTitle = document.getElementById("auth-modal-title");
 const authModalSubtitle = document.getElementById("auth-modal-subtitle");
+const userNavProfile = document.getElementById("user-nav-profile");
+const navUsername = document.getElementById("nav-username");
+const logoutBtn = document.getElementById("logout-btn");
