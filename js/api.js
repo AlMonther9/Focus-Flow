@@ -1,6 +1,8 @@
 // api.js
 
-const API_BASE_URL = "https://focusflow.runasp.net/api";
+const API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "https://focusflow.runasp.net/api"
+    : "/api";
 
 function getHeaders() {
     const headers = { "Content-Type": "application/json" };

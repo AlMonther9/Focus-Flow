@@ -1,6 +1,8 @@
 // auth.js
 
-const AUTH_URL = "https://focusflow.runasp.net/api/auth";
+const AUTH_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "https://focusflow.runasp.net/api/auth"
+    : "/api/auth";
 
 const auth = {
     async register(username, email, password) {
